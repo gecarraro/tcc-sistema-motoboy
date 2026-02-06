@@ -14,5 +14,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  backend:
+    build: ./backend
+    container_name: motoboy_backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://mb_user:nthO07Gi3t@postgres:5432/motoboy"
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:
