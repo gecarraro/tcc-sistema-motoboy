@@ -1,0 +1,35 @@
+name: CI - Sistema Motoboy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositório
+        uses: actions/checkout@v3
+
+      - name: 🟢 Instalar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: 📦 Instalar dependências
+        run: |
+          cd backend
+          npm install
+
+      - name: 🔎 Verificar Prisma
+        run: |
+          cd backend
+          npx prisma generate
+
+      - name: 🚀 Teste de build servidor
+        run: |
+          cd backend
+          node -e "require('./src/app'); console.log('Build OK')"
