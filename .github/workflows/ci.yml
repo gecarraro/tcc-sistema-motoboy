@@ -11,25 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Clonar repositório
+      - name: Clonar repositório
         uses: actions/checkout@v3
 
-      - name: 🟢 Instalar Node
+      - name: Instalar Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      - name: 📦 Instalar dependências
+      - name: Instalar dependências
         run: |
           cd backend
           npm install
 
-      - name: 🔎 Verificar Prisma
+      - name: Verificar Prisma
         run: |
           cd backend
           npx prisma generate
 
-      - name: 🚀 Teste de build servidor
+      - name: Teste de build servidor
         run: |
           cd backend
           node -e "require('./src/app'); console.log('Build OK')"
