@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clientes</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h2>Cadastro de Clientes</h2>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Novo Cliente</h3>
+
+    <input id="nome" placeholder="Nome">
+    <input id="telefone" placeholder="Telefone">
+    <input id="endereco" placeholder="Endereço">
+    <input id="bairro" placeholder="Bairro">
+
+    <button onclick="salvar()">Salvar</button>
+  </div>
+
+  <div class="card">
+    <h3>Lista de Clientes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Bairro</th>
+        </tr>
+      </thead>
+      <tbody id="lista"></tbody>
+    </table>
+  </div>
+
+  <button onclick="window.location='dashboard.html'">Voltar</button>
+
+</div>
+
+<script src="js/api.js"></script>
+
+<script>
+async function carregar() {
+  const clientes = await getClientes();
+
+  let html = "";
+  clientes.forEach(c => {
+    html += `<tr>
+      <td>${c.id}</td>
+      <td>${c.nome}</td>
+      <td>${c.bairro}</td>
+    </tr>`;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+async function salvar() {
+  await criarCliente({
+    nome: nome.value,
+    telefone: telefone.value,
+    endereco: endereco.value,
+    bairro: bairro.value
+  });
+
+  alert("Cliente criado!");
+  carregar();
+}
+
+carregar();
+</script>
+
+</body>
+</html>
