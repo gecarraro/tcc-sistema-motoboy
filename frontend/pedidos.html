@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pedidos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h2>Pedidos</h2>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Novo Pedido</h3>
+
+    <select id="clienteSelect"></select>
+    <button onclick="criar()">Criar Pedido</button>
+  </div>
+
+  <div class="card">
+    <h3>Lista de Pedidos</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Bairro</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody id="lista"></tbody>
+    </table>
+  </div>
+
+  <button onclick="window.location='dashboard.html'">Voltar</button>
+
+</div>
+
+<script src="js/api.js"></script>
+
+<script>
+async function carregarClientes() {
+  const clientes = await getClientes();
+  let html = "";
+
+  clientes.forEach(c => {
+    html += `<option value="${c.id}">${c.nome} - ${c.bairro}</option>`;
+  });
+
+  clienteSelect.innerHTML = html;
+}
+
+async function carregarPedidos() {
+  const pedidos = await listarPedidos();
+  let html = "";
+
+  pedidos.forEach(p => {
+    html += `<tr>
+      <td>${p.id}</td>
+      <td>${p.cliente.nome}</td>
+      <td>${p.bairro}</td>
+      <td>R$ ${p.valor}</td>
+    </tr>`;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+async function criar() {
+  const clienteId = clienteSelect.value;
+  await criarPedido(Number(clienteId));
+  alert("Pedido criado!");
+  carregarPedidos();
+}
+
+carregarClientes();
+carregarPedidos();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login - Sistema Motoboy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h2>Sistema Motoboy</h2>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h3>Login</h3>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
+
+    <button onclick="entrar()">Entrar</button>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+
+<script>
+async function entrar() {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  const res = await login(email, senha);
+
+  if(res.token){
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Login inválido");
+  }
+}
+</script>
+
+</body>
+</html>
