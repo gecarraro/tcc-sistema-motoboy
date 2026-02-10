@@ -6,40 +6,49 @@
 </head>
 <body>
 
-<header>
-  <h2>Pedidos</h2>
-</header>
+<div class="layout">
 
-<div class="container">
-
-  <div class="card">
-    <h3>Novo Pedido</h3>
-
-    <select id="clienteSelect"></select>
-    <button onclick="criar()">Criar Pedido</button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Motoboy</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tabelapreco.html">Tabela de Preços</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="#" onclick="logout()">Sair</a>
   </div>
 
-  <div class="card">
-    <h3>Lista de Pedidos</h3>
+  <!-- CONTEÚDO -->
+  <div class="content">
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Bairro</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
+    <div class="card">
+      <h2>Novo Pedido</h2>
+
+      <select id="clienteSelect"></select>
+      <button onclick="criar()">Criar Pedido</button>
+    </div>
+
+    <div class="card">
+      <h3>Lista de Pedidos</h3>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Bairro</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+
   </div>
-
-  <button onclick="window.location='dashboard.html'">Voltar</button>
-
 </div>
 
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
 
 <script>
 async function carregarClientes() {
@@ -72,13 +81,13 @@ async function carregarPedidos() {
 async function criar() {
   const clienteId = clienteSelect.value;
   await criarPedido(Number(clienteId));
-  alert("Pedido criado!");
+  toast("Pedido criado com sucesso");
   carregarPedidos();
 }
 
 carregarClientes();
 carregarPedidos();
 </script>
-
+</div>
 </body>
 </html>

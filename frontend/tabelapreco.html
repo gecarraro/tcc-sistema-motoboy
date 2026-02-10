@@ -1,70 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tabela Preço</title>
+  <title>Tabela de Preços</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-  <h2>Cadastro de Preços por Bairro</h2>
-</header>
+<div class="layout">
 
-<div class="container">
-
-  <div class="card">
-    <h3>Novo Bairro</h3>
-
-    <input id="bairro" placeholder="Bairro">
-    <input id="valor" placeholder="Valor">
-
-    <button onclick="salvar()">Salvar</button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Motoboy</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tabelapreco.html">Tabela de Preços</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="#" onclick="logout()">Sair</a>
   </div>
 
-  <div class="card">
-    <h3>Lista de Bairro</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Bairro</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
+  <!-- CONTEÚDO -->
+  <div class="content">
+
+    <div class="card">
+      <h2>Cadastro de Preços por Bairro</h2>
+      <p>Defina o valor da entrega por região</p>
+    </div>
+
+    <div class="card">
+      <h3>Novo Bairro</h3>
+
+      <input id="bairro" placeholder="Bairro">
+      <input id="valor" placeholder="Valor" oninput="mascaraValor(this)">
+
+      <button onclick="salvar()">Salvar Preço</button>
+    </div>
+
+    <div class="card">
+      <h3>Lista de Bairros</h3>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Bairro</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+
   </div>
-
-  <button onclick="window.location='dashboard.html'">Voltar</button>
-
 </div>
 
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
 
 <script>
-async function carregar() {
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+
+async function carregar(){
   const precos = await getPrecos();
 
-  let html = "";
-  precos.forEach(c => {
+  let html="";
+  precos.forEach(p=>{
     html += `<tr>
-      <td>${c.id}</td>
-      <td>${c.bairro}</td>
-      <td>R$ ${c.valor}</td>
+      <td>${p.id}</td>
+      <td>${p.bairro}</td>
+      <td>R$ ${p.valor.toFixed(2)}</td>
     </tr>`;
   });
 
   document.getElementById("lista").innerHTML = html;
 }
 
-async function salvar() {
+async function salvar(){
+  const bairroVal = bairro.value.trim();
+  const valorVal = valor.value.trim();
+
+  if(!bairroVal || !valorVal){
+    toast("Preencha todos os campos","erro");
+    return;
+  }
+
   await criarPreco({
-    bairro: bairro.value,
-    valor: Number(valor.value)
+    bairro: bairroVal,
+    valor: converterValor(valorVal)
   });
 
-  alert("Preço criado!");
+  toast("Preço cadastrado com sucesso");
+
+  bairro.value="";
+  valor.value="";
+
   carregar();
+}
+
+/* máscara valor */
+function mascaraValor(campo){
+  let v = campo.value.replace(/\D/g,'');
+  v = (v/100).toFixed(2)+'';
+  v = v.replace(".",",");
+  v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.');
+  campo.value = 'R$ '+v;
+}
+
+/* converter para float */
+function converterValor(v){
+  if(!v) return 0;
+
+  v = v.replace("R$","")
+       .replace(/\./g,"")
+       .replace(",",".")
+       .trim();
+
+  return parseFloat(v);
 }
 
 carregar();
