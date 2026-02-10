@@ -6,42 +6,53 @@
 </head>
 <body>
 
-<header>
-  <h2>Cadastro de Clientes</h2>
-</header>
+<div class="layout">
 
-<div class="container">
-
-  <div class="card">
-    <h3>Novo Cliente</h3>
-
-    <input id="nome" placeholder="Nome">
-    <input id="telefone" placeholder="Telefone">
-    <input id="endereco" placeholder="Endereço">
-    <input id="bairro" placeholder="Bairro">
-
-    <button onclick="salvar()">Salvar</button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Motoboy</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tabelapreco.html">Tabela de Preços</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="#" onclick="logout()">Sair</a>
   </div>
 
-  <div class="card">
-    <h3>Lista de Clientes</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Bairro</th>
-        </tr>
-      </thead>
-      <tbody id="lista"></tbody>
-    </table>
+  <!-- CONTEÚDO -->
+  <div class="content">
+
+    <div class="card">
+      <h2>Cadastro de Clientes</h2>
+
+      <input id="nome" placeholder="Nome">
+      <input id="telefone" placeholder="Telefone" oninput="mascaraTelefone(this)">
+      <input id="endereco" placeholder="Endereço">
+      <input id="bairro" placeholder="Bairro">
+
+      <button onclick="salvar()">Salvar Cliente</button>
+    </div>
+
+    <div class="card">
+      <h3>Lista de Clientes</h3>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Bairro</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+
   </div>
-
-  <button onclick="window.location='dashboard.html'">Voltar</button>
-
 </div>
 
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
 
 <script>
 async function carregar() {
@@ -52,6 +63,7 @@ async function carregar() {
     html += `<tr>
       <td>${c.id}</td>
       <td>${c.nome}</td>
+      <td>${formatarTelefone(c.telefone)}</td>
       <td>${c.bairro}</td>
     </tr>`;
   });
@@ -60,15 +72,70 @@ async function carregar() {
 }
 
 async function salvar() {
+  const nomeVal = nome.value.trim();
+  const telefoneVal = limparTelefone(telefone.value.trim());
+  const enderecoVal = endereco.value.trim();
+  const bairroVal = bairro.value.trim();
+
+  // validação obrigatórios
+  if (!nomeVal || !telefoneVal || !enderecoVal || !bairroVal) {
+    toast("Preencha todos os campos", "erro");
+    return;
+  }
+
   await criarCliente({
-    nome: nome.value,
-    telefone: telefone.value,
-    endereco: endereco.value,
-    bairro: bairro.value
+    nome: nomeVal,
+    telefone: telefoneVal,
+    endereco: enderecoVal,
+    bairro: bairroVal
   });
 
-  alert("Cliente criado!");
+  toast("Cliente criado com sucesso");
+  
+  // limpa campos
+  nome.value = "";
+  telefone.value = "";
+  endereco.value = "";
+  bairro.value = "";
+
   carregar();
+}
+
+function mascaraTelefone(campo) {
+  let v = campo.value.replace(/\D/g, "");
+
+  if (v.length > 11) v = v.slice(0, 11);
+
+  if (v.length > 10) {
+    campo.value = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
+  } else if (v.length > 6) {
+    campo.value = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+  } else if (v.length > 2) {
+    campo.value = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+  } else {
+    campo.value = v;
+  }
+}
+
+function formatarTelefone(tel){
+  if(!tel) return "";
+
+  tel = tel.replace(/\D/g,'');
+
+  if(tel.length === 11){
+    return tel.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  }
+
+  if(tel.length === 10){
+    return tel.replace(/^(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  }
+
+  return tel;
+}
+
+
+function limparTelefone(tel){
+  return tel.replace(/\D/g,'');
 }
 
 carregar();

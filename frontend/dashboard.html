@@ -1,33 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>Sistema Motoboy</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-  <h2>Painel do Sistema</h2>
-</header>
+<div class="layout">
 
-<div class="container">
+  <div class="sidebar">
+    <h2>Motoboy</h2>
 
-  <div class="card">
-    <h3>Menu</h3>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tabelapreco.html">Tabela de Preços</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="#" onclick="logout()">Sair</a>
+  </div>
 
-    <button onclick="window.location='tabelapreco.html'">Tabela de Preços</button>
-    <button onclick="window.location='clientes.html'">Clientes</button>
-    <button onclick="window.location='pedidos.html'">Pedidos</button>
-    <button onclick="logout()">Sair</button>
+  <div class="content">
+
+    <div class="card">
+      <h2>Dashboard</h2>
+      <p>Visão geral do sistema</p>
+    </div>
+
+    <div class="card">
+      <h3>Indicadores</h3>
+
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        
+        <div class="card" style="flex:1">
+          <h3 id="totalClientes">0</h3>
+          <p>Clientes</p>
+        </div>
+
+        <div class="card" style="flex:1">
+          <h3 id="totalPedidos">0</h3>
+          <p>Pedidos</p>
+        </div>
+
+        <div class="card" style="flex:1">
+          <h3 id="valorTotal">R$ 0</h3>
+          <p>Faturamento</p>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
 </div>
+
+<script src="js/api.js"></script>
 
 <script>
 function logout(){
   localStorage.removeItem("token");
   window.location.href = "index.html";
 }
+
+async function carregarDashboard(){
+  const clientes = await getClientes();
+  const pedidos = await listarPedidos();
+
+  totalClientes.innerText = clientes.length;
+  totalPedidos.innerText = pedidos.length;
+
+  let total = 0;
+  pedidos.forEach(p => total += p.valor);
+  valorTotal.innerText = "R$ " + total.toFixed(2);
+}
+
+carregarDashboard();
 </script>
 
 </body>
