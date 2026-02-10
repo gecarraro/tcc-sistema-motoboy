@@ -62,3 +62,27 @@ async function listarPedidos() {
 
   return res.json();
 }
+
+async function getPrecos() {
+  const res = await fetch(`${API}/precos`, {
+    headers: {
+      Authorization: "Bearer " + getToken()
+    }
+  });
+
+  return res.json();
+}
+
+
+async function criarPreco(preco) {
+  const res = await fetch(`${API}/precos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken()
+    },
+    body: JSON.stringify(preco)
+  });
+
+  return res.json();
+}
