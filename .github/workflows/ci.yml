@@ -10,8 +10,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: postgresql://mb_user:nthO07Gi3t@localhost:5432/motoboy
+      JWT_SECRET: tccmotoboy
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mb_user
+          POSTGRES_PASSWORD: nthO07Gi3t
+          POSTGRES_DB: motoboy
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
-      - name: Clonar repositório
+      - name: Checkout código
         uses: actions/checkout@v3
 
       - name: Instalar Node
@@ -19,17 +38,28 @@ jobs:
         with:
           node-version: 20
 
-      - name: Instalar dependências
+      - name: Instalar dependências backend
         run: |
           cd backend
           npm install
 
-      - name: Verificar Prisma
+      - name: Criar .env para testes
+        run: |
+          cd backend
+          echo DATABASE_URL="postgresql://mb_user:nthO07Gi3t@localhost:5432/motoboy" > .env.test
+          echo JWT_SECRET="tccmotoboy" >> .env.test
+
+      - name: Prisma generate
         run: |
           cd backend
           npx prisma generate
 
-      - name: Teste de build servidor
+      - name: Rodar migrations
         run: |
           cd backend
-          node -e "require('./src/app'); console.log('Build OK')"
+          npx prisma migrate deploy
+
+      - name: Rodar testes automatizados
+        run: |
+          cd backend
+          npm test
