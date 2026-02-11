@@ -6,6 +6,8 @@ const authRoutes = require("./routes/authRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const precoRoutes = require("./routes/precoRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
+const funcionarioRoutes = require("./routes/funcionarioRoutes");
+
 const { verificarToken } = require("./middlewares/authMiddleware");
 
 app.use(cors());
@@ -15,6 +17,7 @@ app.use(authRoutes);
 app.use("/clientes", verificarToken, clienteRoutes);
 app.use("/precos", verificarToken, precoRoutes);
 app.use("/pedidos", verificarToken, pedidoRoutes);
+app.use("/funcionarios", funcionarioRoutes);
 
 app.get("/", (req, res) => {
   res.send("API rodando");
