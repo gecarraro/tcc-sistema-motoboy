@@ -8,39 +8,71 @@ datasource db {
 }
 
 model Usuario {
-  id            Int      @id @default(autoincrement())
-  nome          String
-  email         String   @unique
-  senha         String
-  tipo          String
-  data_criacao  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  tipo      String
+  createdAt DateTime @default(now())
+}
+
+model Funcionario {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  cpf       String   @unique
+  cnh       String   @unique
+  telefone  String
+  cep       String
+  rua       String
+  numero    String
+  bairro    String
+  cidade    String
+  estado    String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  pedidos   Pedido[]
 }
 
 model Cliente {
-  id            Int      @id @default(autoincrement())
-  nome          String
-  telefone      String
-  endereco      String
-  bairro        String
-  data_criacao  DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  tipoPessoa   String
+  cpfCnpj      String   @unique
+  razaoSocial  String
+  nomeFantasia String?
+  telefone     String
+  cep          String
+  rua          String
+  numero       String
+  bairro       String
+  cidade       String
+  estado       String
+  createdAt    DateTime @default(now())
 
-  pedidos   Pedido[]   // <-- adiciona esta linha
+  pedidos      Pedido[]
 }
 
-
 model TabelaPreco {
-  id            Int      @id @default(autoincrement())
-  bairro        String   @unique
-  valor         Float
-  data_criacao  DateTime @default(now())
+  id     Int     @id @default(autoincrement())
+  bairro String  @unique
+  valor  Float
 }
 
 model Pedido {
   id            Int      @id @default(autoincrement())
   clienteId     Int
-  cliente       Cliente  @relation(fields: [clienteId], references: [id])
-  bairro        String
+  funcionarioId Int
+
+  cepEntrega    String
+  ruaEntrega    String
+  numeroEntrega String
+  bairroEntrega String
+  cidadeEntrega String
+
   valor         Float
   status        String   @default("pendente")
-  data_criacao  DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  cliente       Cliente     @relation(fields: [clienteId], references: [id])
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
 }
