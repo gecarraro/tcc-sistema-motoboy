@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: postgresql://mb_user:nthO07Gi3t@localhost:5432/motoboy
+      JWT_SECRET: tccmotoboy
+
     services:
       postgres:
         image: postgres:16
