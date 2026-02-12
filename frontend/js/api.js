@@ -86,3 +86,23 @@ async function criarPreco(preco) {
 
   return res.json();
 }
+
+async function getFuncionarios(){
+  const res = await fetch(`${API}/funcionarios`, {
+    headers: { Authorization: "Bearer " + getToken() }
+  });
+  return res.json();
+}
+
+async function criarFuncionario(data){
+  const res = await fetch(`${API}/funcionarios`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken()
+    },
+    body: JSON.stringify(data)
+  });
+
+  return res.json();
+}
