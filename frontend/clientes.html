@@ -8,135 +8,186 @@
 
 <div class="layout">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>Motoboy</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="tabelapreco.html">Tabela de Preços</a>
-    <a href="clientes.html">Clientes</a>
-    <a href="pedidos.html">Pedidos</a>
-    <a href="#" onclick="logout()">Sair</a>
-  </div>
+<div class="sidebar">
+  <h2>Motoboy</h2>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="clientes.html">Clientes</a>
+  <a href="funcionarios.html">Funcionários</a>
+  <a href="pedidos.html">Pedidos</a>
+  <a href="tabelapreco.html">Tabela de Preços</a>
+  <a href="#" onclick="logout()">Sair</a>
+</div>
 
-  <!-- CONTEÚDO -->
-  <div class="content">
+<div class="content">
 
-    <div class="card">
-      <h2>Cadastro de Clientes</h2>
+<div class="card">
+<h2>Cadastro de Cliente</h2>
 
-      <input id="nome" placeholder="Nome">
-      <input id="telefone" placeholder="Telefone" oninput="mascaraTelefone(this)">
-      <input id="endereco" placeholder="Endereço">
-      <input id="bairro" placeholder="Bairro">
+<select id="tipoPessoa">
+  <option value="PF">Pessoa Física</option>
+  <option value="PJ">Pessoa Jurídica</option>
+</select>
 
-      <button onclick="salvar()">Salvar Cliente</button>
-    </div>
+<input id="cpfCnpj" placeholder="CPF ou CNPJ" oninput="mascaraDocumento(this)">
+<input id="razaoSocial" placeholder="Razão Social">
+<input id="nomeFantasia" placeholder="Nome Fantasia">
+<input id="telefone" placeholder="Telefone" oninput="mascaraTelefone(this)">
 
-    <div class="card">
-      <h3>Lista de Clientes</h3>
+<h3>Endereço</h3>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Telefone</th>
-            <th>Bairro</th>
-          </tr>
-        </thead>
-        <tbody id="lista"></tbody>
-      </table>
-    </div>
+<input id="cep" placeholder="CEP">
+<button onclick="buscarCEP()">Buscar CEP</button>
 
-  </div>
+<input id="rua" placeholder="Rua">
+<input id="numero" placeholder="Número">
+<input id="bairro" placeholder="Bairro">
+<input id="cidade" placeholder="Cidade">
+<input id="estado" placeholder="Estado">
+
+<button onclick="salvar()">Salvar Cliente</button>
+</div>
+
+<div class="card">
+<h3>Lista de Clientes</h3>
+
+<table class="table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>Documento</th>
+<th>Telefone</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
+</div>
+
+</div>
 </div>
 
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 
 <script>
-async function carregar() {
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="index.html";
+}
+
+async function carregar(){
   const clientes = await getClientes();
 
-  let html = "";
-  clientes.forEach(c => {
-    html += `<tr>
+  let html="";
+  clientes.forEach(c=>{
+    html+=`<tr>
       <td>${c.id}</td>
-      <td>${c.nome}</td>
+      <td>${c.nomeFantasia || c.razaoSocial}</td>
+      <td>${formatarDoc(c.cpfCnpj)}</td>
       <td>${formatarTelefone(c.telefone)}</td>
-      <td>${c.bairro}</td>
     </tr>`;
   });
 
-  document.getElementById("lista").innerHTML = html;
+  lista.innerHTML=html;
 }
 
-async function salvar() {
-  const nomeVal = nome.value.trim();
-  const telefoneVal = limparTelefone(telefone.value.trim());
-  const enderecoVal = endereco.value.trim();
-  const bairroVal = bairro.value.trim();
+async function salvar(){
 
-  // validação obrigatórios
-  if (!nomeVal || !telefoneVal || !enderecoVal || !bairroVal) {
-    toast("Preencha todos os campos", "erro");
-    return;
-  }
+  const data = {
+    tipoPessoa: tipoPessoa.value,
+    cpfCnpj: limparNumero(cpfCnpj.value),
+    razaoSocial: razaoSocial.value,
+    nomeFantasia: nomeFantasia.value,
+    telefone: limparNumero(telefone.value),
+    cep: cep.value,
+    rua: rua.value,
+    numero: numero.value,
+    bairro: bairro.value,
+    cidade: cidade.value,
+    estado: estado.value
+  };
 
-  await criarCliente({
-    nome: nomeVal,
-    telefone: telefoneVal,
-    endereco: enderecoVal,
-    bairro: bairroVal
-  });
+  await criarCliente(data);
+  toast("Cliente cadastrado");
 
-  toast("Cliente criado com sucesso");
-  
-  // limpa campos
-  nome.value = "";
-  telefone.value = "";
-  endereco.value = "";
-  bairro.value = "";
+  document.querySelectorAll("input").forEach(i=>i.value="");
 
   carregar();
 }
 
-function mascaraTelefone(campo) {
-  let v = campo.value.replace(/\D/g, "");
+async function buscarCEP(){
+  const r = await fetch(`https://viacep.com.br/ws/${cep.value}/json/`);
+  const d = await r.json();
 
-  if (v.length > 11) v = v.slice(0, 11);
-
-  if (v.length > 10) {
-    campo.value = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
-  } else if (v.length > 6) {
-    campo.value = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-  } else if (v.length > 2) {
-    campo.value = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
-  } else {
-    campo.value = v;
-  }
+  rua.value=d.logradouro;
+  bairro.value=d.bairro;
+  cidade.value=d.localidade;
+  estado.value=d.uf;
 }
 
-function formatarTelefone(tel){
-  if(!tel) return "";
-
-  tel = tel.replace(/\D/g,'');
-
-  if(tel.length === 11){
-    return tel.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-  }
-
-  if(tel.length === 10){
-    return tel.replace(/^(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
-  }
-
-  return tel;
+function limparNumero(v){
+  return v.replace(/\D/g,'');
 }
 
+function mascaraTelefone(campo){
+  let v = campo.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
 
-function limparTelefone(tel){
-  return tel.replace(/\D/g,'');
+  if(v.length>10)
+    campo.value=v.replace(/^(\d{2})(\d{5})(\d{4}).*/,"($1) $2-$3");
+  else if(v.length>6)
+    campo.value=v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/,"($1) $2-$3");
+  else if(v.length>2)
+    campo.value=v.replace(/^(\d{2})(\d{0,5})/,"($1) $2");
+  else campo.value=v;
 }
+
+function formatarTelefone(v){
+  if(!v) return "";
+  v=v.replace(/\D/g,'');
+
+  if(v.length===11)
+    return v.replace(/^(\d{2})(\d{5})(\d{4})/,"($1) $2-$3");
+
+  if(v.length===10)
+    return v.replace(/^(\d{2})(\d{4})(\d{4})/,"($1) $2-$3");
+
+  return v;
+}
+
+function formatarDoc(v){
+  if(!v) return "";
+  v=v.replace(/\D/g,'');
+
+  if(v.length===11)
+    return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,"$1.$2.$3-$4");
+
+  if(v.length===14)
+    return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,"$1.$2.$3/$4-$5");
+
+  return v;
+}
+
+function mascaraDocumento(campo){
+  let v = campo.value.replace(/\D/g,'');
+
+  if(v.length<=11){
+    v=v.slice(0,11);
+    v=v.replace(/(\d{3})(\d)/,"$1.$2");
+    v=v.replace(/(\d{3})(\d)/,"$1.$2");
+    v=v.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
+  }else{
+    v=v.slice(0,14);
+    v=v.replace(/^(\d{2})(\d)/,"$1.$2");
+    v=v.replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3");
+    v=v.replace(/\.(\d{3})(\d)/,".$1/$2");
+    v=v.replace(/(\d{4})(\d)/,"$1-$2");
+  }
+
+  campo.value=v;
+}
+
 
 carregar();
 </script>

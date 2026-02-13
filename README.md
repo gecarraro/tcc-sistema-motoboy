@@ -1,66 +1,139 @@
-# Sistema de Gestão de Entregas
+# Sistema de Gestão de Entregas - Motoboy
 
-Projeto desenvolvido como Trabalho de Conclusão da Pós-graduação em Desenvolvimento Full Stack - PUCRS.
+Projeto desenvolvido como Trabalho de Conclusão de Curso (TCC) da pós-graduação em Desenvolvimento Full Stack pela PUCRS.
+O sistema tem como objetivo realizar o controle de pedidos de entrega de uma empresa de motoboys, permitindo o cadastro de clientes, funcionários, valores por bairro e gerenciamento completo das entregas.
 
-## Sobre o projeto
-Sistema web para gerenciamento de entregas de uma empresa de motoboy, permitindo o controle de clientes, cálculo automático de valores por bairro e registro de pedidos.
+---
 
-A aplicação foi desenvolvida com foco em boas práticas de desenvolvimento full stack, arquitetura em camadas e organização profissional do backend.
+# Funcionalidades
 
-## Tecnologias
+### Autenticação
+- Login com JWT
+- Rotas protegidas
+- Controle de usuário administrador
+
+### Clientes
+- Cadastro PF e PJ
+- CPF/CNPJ com validação e máscara
+- Endereço completo com busca automática por CEP
+- Listagem de clientes
+
+### Funcionários (Motoboys)
+- Cadastro completo
+- CPF, CNH e telefone
+- Endereço completo com busca automática por CEP
+- Status ativo/inativo
+- Listagem de funcionários
+
+### Tabela de Preço por Bairro
+- Cadastro de valor por bairro
+- Utilizado automaticamente no pedido
+
+### Pedidos(Em desenvolvimeno)
+- Seleção de cliente
+- Seleção de motoboy
+- Endereço de entrega completo com busca automática por CEP
+- Cálculo automático do valor por bairro
+- Status do pedido
+
+---
+
+# Arquitetura
+
+O projeto foi desenvolvido seguindo boas práticas de desenvolvimento Full Stack e conceitos de arquitetura em camadas.
 
 ### Backend
 - Node.js
 - Express
-- PostgreSQL
 - Prisma ORM
-- JWT (autenticação)
+- PostgreSQL
+- JWT autenticação
+- Arquitetura em camadas (Controller, Service, Routes)
 
-### Frontend(Em construção)
-- CSS
+### Frontend
 - HTML
-- JavaScript
+- CSS
+- JavaScript puro
+- Consumo de API REST
 
-### DevOps(Em construção)
-- Docker
-- GitHub Actions (CI/CD)
+### Banco de Dados
+- PostgreSQL
+- Modelagem relacional
+- Normalização de dados
+- Controle de integridade
+
+### DevOps
+- Docker e Docker Compose
 - GitHub
+- CI/CD com GitHub Actions
+- Testes automatizados com Jest
 
-## Funcionalidades
+---
 
-- Autenticação de usuários
-- Cadastro de clientes
-- Cadastro de tabela de preços por bairro
-- Criação de pedidos
-- Cálculo automático do valor da entrega
-- API REST estruturada em camadas
+# Telas do Sistema
 
-## Arquitetura
+## Login
+![Login](prints/index.png)
 
-O backend segue padrão de arquitetura em camadas:
+## Dashboard
+![Dashboard](prints/dashboard.png)
 
-- controllers -> regras de entrada/saída
-- services -> regras de negócio
-- routes -> endpoints da API
-- middlewares -> autenticação
+## Cadastro de Clientes
+![Clientes](prints/clientes.png)
 
-## Como executar o projeto
+## Cadastro de Funcionários
+![Funcionarios](prints/funcionarios.png)
 
-# instalar dependências
-npm install
+## Tabela de Preços
+![Precos](prints/precos.png)
 
-# rodar servidor
-node server.js
+## Pedido (Em desenvolvimento)
 
-# Servidor:
-http://localhost:8080
+---
 
-## Objetivo acadêmico
 
-Este projeto foi desenvolvido como requisito para conclusão da pós-graduação em Desenvolvimento Full Stack, com o objetivo de aplicar na prática conceitos de:
+# Como executar o projeto
 
-- Backend com Node.js
-- Banco de dados relacional
-- Arquitetura de software
-- DevOps e versionamento
-- Conteinerização
+## Pré-requisitos
+- Docker
+- Docker Compose
+- Node.js (opcional para rodar local)
+
+---
+
+## Subir projeto completo
+- docker compose up -d
+
+## Backend disponível em:
+- http://localhost:8080
+
+## Frontend
+- abrir index.html no navegador
+
+---
+
+# Executar testes automatizados(Em desenvolvimento)
+- npm install
+- npm test
+
+## Os testes validam:
+- login
+- autenticação
+- criação de cliente
+- rotas protegidas
+
+# Pipeline CI/CD
+## O projeto possui pipeline automatizada no GitHub Actions que executa:
+- Instalação de dependências
+- Subida de banco PostgreSQL
+- Migrations Prisma
+- Testes automatizados
+
+Executada a cada push no repositório.
+
+---
+
+# Objetivo acadêmico
+
+Este projeto foi desenvolvido com fins acadêmicos para aplicação prática dos conhecimentos adquiridos na pós-graduação.
+O sistema foi inspirado em uma empresa real de entregas, com o objetivo de simular um ambiente profissional de desenvolvimento de software.

@@ -27,16 +27,16 @@ async function getClientes() {
 }
 
 
-async function criarCliente(cliente) {
+async function criarCliente(data){
   const res = await fetch(`${API}/clientes`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken()
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:"Bearer "+getToken()
     },
-    body: JSON.stringify(cliente)
+    body: JSON.stringify(data)
   });
-
+  
   return res.json();
 }
 

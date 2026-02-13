@@ -1,18 +1,16 @@
 const prisma = require("../../prismaClient");
 
 async function criarCliente(data) {
-  return prisma.cliente.create({
-    data: {
-      nome: data.nome,
-      telefone: data.telefone,
-      endereco: data.endereco,
-      bairro: data.bairro
-    }
-  });
+  return prisma.cliente.create({ data });
 }
 
 async function listarClientes() {
-  return prisma.cliente.findMany();
+  return prisma.cliente.findMany({
+    orderBy:{id:"desc"}
+  });
 }
 
-module.exports = { criarCliente, listarClientes };
+module.exports = {
+  criarCliente,
+  listarClientes
+};
