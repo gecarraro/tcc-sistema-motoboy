@@ -29,7 +29,7 @@ O sistema tem como objetivo realizar o controle de pedidos de entrega de uma emp
 - Cadastro de valor por bairro
 - Utilizado automaticamente no pedido
 
-### Pedidos(Em desenvolvimeno)
+### Pedidos
 - Seleção de cliente
 - Seleção de motoboy
 - Endereço de entrega completo com busca automática por CEP
@@ -87,7 +87,8 @@ O projeto foi desenvolvido seguindo boas práticas de desenvolvimento Full Stack
 ## Tabela de Preços
 ![Precos](prints/precos.png)
 
-## Pedido (Em desenvolvimento)
+## Pedido
+![Pedidos](prints/pedidos.png)
 
 ---
 

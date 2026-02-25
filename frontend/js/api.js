@@ -40,14 +40,14 @@ async function criarCliente(data){
   return res.json();
 }
 
-async function criarPedido(clienteId) {
+async function criarPedido(data){
   const res = await fetch(`${API}/pedidos`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken()
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:"Bearer "+getToken()
     },
-    body: JSON.stringify({ clienteId })
+    body: JSON.stringify(data)
   });
 
   return res.json();
