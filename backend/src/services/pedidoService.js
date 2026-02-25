@@ -1,38 +1,81 @@
 const prisma = require("../../prismaClient");
 
-async function criarPedido(clienteId) {
-  // buscar cliente
+async function criarPedido(data) {
+
+  const clienteId = Number(data.clienteId);
+  const funcionarioId = Number(data.funcionarioId);
+
+  if (!clienteId) {
+    throw new Error("clienteId não informado");
+  }
+
+  if (!funcionarioId) {
+    throw new Error("funcionarioId não informado");
+  }
+
+  // validar cliente
   const cliente = await prisma.cliente.findUnique({
-    where: { id: clienteId }
+    where: {
+      id: clienteId
+    }
   });
 
   if (!cliente) {
     throw new Error("Cliente não encontrado");
   }
 
-  // buscar preço do bairro
+  // validar funcionário
+  const funcionario = await prisma.funcionario.findUnique({
+    where: {
+      id: funcionarioId
+    }
+  });
+
+  if (!funcionario) {
+    throw new Error("Funcionário não encontrado");
+  }
+
+  // buscar preço pelo bairro
   const preco = await prisma.tabelaPreco.findFirst({
-    where: { bairro: cliente.bairro }
+    where: {
+      bairro: data.bairroEntrega
+    }
   });
 
   if (!preco) {
-    throw new Error("Preço não cadastrado para o bairro");
+    throw new Error("Preço não cadastrado para este bairro");
   }
 
-  // criar pedido
   return prisma.pedido.create({
     data: {
-      clienteId: cliente.id,
-      bairro: cliente.bairro,
-      valor: preco.valor
+      clienteId: clienteId,
+      funcionarioId: funcionarioId,
+      cepEntrega: data.cepEntrega,
+      ruaEntrega: data.ruaEntrega,
+      numeroEntrega: data.numeroEntrega,
+      bairroEntrega: data.bairroEntrega,
+      cidadeEntrega: data.cidadeEntrega,
+      valor: preco.valor,
+      status: "pendente"
+    },
+    include: {
+      cliente: true,
+      funcionario: true
     }
   });
 }
 
 async function listarPedidos() {
   return prisma.pedido.findMany({
-    include: { cliente: true }
+    include: {
+      cliente: true,
+      funcionario: true
+    },
+    orderBy: { id: "desc" }
   });
 }
 
-module.exports = { criarPedido, listarPedidos };
+module.exports = {
+  criarPedido,
+  listarPedidos
+};

@@ -8,85 +8,135 @@
 
 <div class="layout">
 
-  <div class="sidebar">
-    <h2>Motoboy</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="clientes.html">Clientes</a>
-    <a href="funcionarios.html">Funcionários</a>
-    <a href="pedidos.html">Pedidos</a>
-    <a href="tabelapreco.html">Tabela de Preços</a>
-    <a href="#" onclick="logout()">Sair</a>
-  </div>
+<div class="sidebar">
+  <h2>Motoboy</h2>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="clientes.html">Clientes</a>
+  <a href="funcionarios.html">Funcionários</a>
+  <a href="pedidos.html">Pedidos</a>
+  <a href="tabelapreco.html">Tabela de Preços</a>
+  <a href="#" onclick="logout()">Sair</a>
+</div>
 
-  <div class="content">
+<div class="content">
 
-    <div class="card">
-      <h2>Novo Pedido</h2>
+<div class="card">
+<h2>Novo Pedido</h2>
 
-      <select id="clienteSelect"></select>
-      <button onclick="criar()">Criar Pedido</button>
-    </div>
+<label>Cliente</label>
+<select id="cliente"></select>
 
-    <div class="card">
-      <h3>Lista de Pedidos</h3>
+<label>Motoboy</label>
+<select id="funcionario"></select>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Bairro</th>
-            <th>Valor</th>
-          </tr>
-        </thead>
-        <tbody id="lista"></tbody>
-      </table>
-    </div>
+<h3>Endereço de Entrega</h3>
 
-  </div>
+<input id="cep" placeholder="CEP">
+<button onclick="buscarCEP()">Buscar CEP</button>
+
+<input id="rua" placeholder="Rua">
+<input id="numero" placeholder="Número">
+<input id="bairro" placeholder="Bairro">
+<input id="cidade" placeholder="Cidade">
+
+<button onclick="criar()">Criar Pedido</button>
+</div>
+
+<div class="card">
+<h3>Lista de Pedidos</h3>
+
+<table class="table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Cliente</th>
+<th>Motoboy</th>
+<th>Bairro</th>
+<th>Valor</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
+</div>
+
+</div>
 </div>
 
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 
 <script>
-async function carregarClientes() {
-  const clientes = await getClientes();
-  let html = "";
-
-  clientes.forEach(c => {
-    html += `<option value="${c.id}">${c.nome} - ${c.bairro}</option>`;
-  });
-
-  clienteSelect.innerHTML = html;
+function logout(){
+  localStorage.removeItem("token");
+  window.location="index.html";
 }
 
-async function carregarPedidos() {
-  const pedidos = await listarPedidos();
-  let html = "";
+async function carregar(){
 
-  pedidos.forEach(p => {
-    html += `<tr>
+  const clientes = await getClientes();
+  const funcs = await getFuncionarios();
+  const pedidos = await listarPedidos();
+
+  cliente.innerHTML = clientes.map(c=>
+    `<option value="${c.id}">${c.nomeFantasia || c.razaoSocial}</option>`
+  ).join("");
+
+  funcionario.innerHTML = funcs.map(f=>
+    `<option value="${f.id}">${f.nome}</option>`
+  ).join("");
+
+  let html="";
+  pedidos.forEach(p=>{
+    html+=`<tr>
       <td>${p.id}</td>
-      <td>${p.cliente.nome}</td>
-      <td>${p.bairro}</td>
-      <td>R$ ${p.valor}</td>
+      <td>${p.cliente.nomeFantasia || p.cliente.razaoSocial}</td>
+      <td>${p.funcionario.nome}</td>
+      <td>${p.bairroEntrega}</td>
+      <td>R$ ${p.valor.toFixed(2)}</td>
+      <td>${p.status}</td>
     </tr>`;
   });
 
-  document.getElementById("lista").innerHTML = html;
+  lista.innerHTML = html;
 }
 
-async function criar() {
-  const clienteId = clienteSelect.value;
-  await criarPedido(Number(clienteId));
+async function buscarCEP(){
+  const r = await fetch(`https://viacep.com.br/ws/${cep.value}/json/`);
+  const d = await r.json();
+
+  rua.value=d.logradouro;
+  bairro.value=d.bairro;
+  cidade.value=d.localidade;
+}
+
+async function criar(){
+
+  const data = {
+    clienteId: Number(cliente.value),
+    funcionarioId: Number(funcionario.value),
+    cepEntrega: cep.value.replace(/\D/g,''),
+    ruaEntrega: rua.value,
+    numeroEntrega: numero.value,
+    bairroEntrega: bairro.value,
+    cidadeEntrega: cidade.value
+  };
+
+  const r = await criarPedido(data);
+
+  if(r.erro){
+    alert(r.erro);
+    return;
+  }
+
   toast("Pedido criado com sucesso");
-  carregarPedidos();
+  document.querySelectorAll("input").forEach(i=>i.value="");
+  carregar();
 }
 
-carregarClientes();
-carregarPedidos();
+carregar();
 </script>
-</div>
+
 </body>
 </html>
