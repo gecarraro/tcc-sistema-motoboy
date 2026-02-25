@@ -87,7 +87,7 @@ O projeto foi desenvolvido seguindo boas práticas de desenvolvimento Full Stack
 ## Tabela de Preços
 ![Precos](prints/precos.png)
 
-## Pedido (Em desenvolvimento)
+## Pedido
 ![Pedidos](prints/pedidos.png)
 
 ---
